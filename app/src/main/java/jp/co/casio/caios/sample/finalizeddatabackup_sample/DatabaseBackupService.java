@@ -19,6 +19,7 @@ public class DatabaseBackupService extends IntentService {
 
     //My Explicit
     String myCONSECNUMBER, itemName, myQTY, myUnitPrice;
+    int intCount, intStartCount = 0;
 
 
     private static String TAG = "DatabaseBackupService";
@@ -191,7 +192,7 @@ public class DatabaseBackupService extends IntentService {
         String consecNumber = intent.getStringExtra(BroadcastReceiver.EXTRA_CONSECNUMBER);
         String selection = String.format("CONSECNUMBER='%s'", consecNumber);
 
-		copySALESWORKcst004("CST004", selection, null, SQLCMD_CREATE_TMP_CST004);
+        copySALESWORKcst004("CST004", selection, null, SQLCMD_CREATE_TMP_CST004);
 
         copySALESWORK("CST005", selection, "LINENUMBER ASC", SQLCMD_CREATE_TMP_CST005);
 
@@ -229,27 +230,12 @@ public class DatabaseBackupService extends IntentService {
             int offset = cursor.getColumnIndex("SALESTTLQTY");
             String mySALESTTLQTY = cursor.getString(offset);
 
-
-
-
-
             //Show Log
             Log.i("Master", "mySALESTTLQTY ==> " + mySALESTTLQTY);
-
-
-
-            // forPrintByEPSON();
-//            int intTime = 0;
-//            while (intTime < Integer.parseInt(myQTY)) {
-//
-//                forPrintByEPSON(myCONSECNUMBER, itemName, "1", myUnitPrice, "1/6");
-//
-//                intTime += 1;
- //           }   // while
-
+            intCount = Integer.parseInt(mySALESTTLQTY);
 
             cursor.moveToNext();
-            isPrintKPNo2(myCONSECNUMBER);
+            //isPrintKPNo2(myCONSECNUMBER);
 
         }   //for
 
@@ -264,7 +250,7 @@ public class DatabaseBackupService extends IntentService {
                                  String strItemName,
                                  String strQTY,
                                  String strUnitPrice,
-                                 String strCount) {
+                                 String strMyCount) {
 
         //Connected Printer Pass COM2
         Log.i("Master", "print epson 666");
@@ -314,6 +300,15 @@ public class DatabaseBackupService extends IntentService {
             }
             data.write(0x0d);
             data.write(0x0a);
+
+            //Print Count
+            char[] charCount = strMyCount.toCharArray();
+            for (int i = 0; i < charCount.length; i++) {
+                data.write(charCount[i]);
+            }   // for
+            data.write(0x0d);
+            data.write(0x0a);
+
 
             data.write(0x1b);   //ESC
             data.write(0x64);   //Feed ling
@@ -390,13 +385,18 @@ public class DatabaseBackupService extends IntentService {
 
 
             // forPrintByEPSON();
-            int intTime = 0;
-            while (intTime < Integer.parseInt(myQTY)) {
 
-                forPrintByEPSON(myCONSECNUMBER, itemName, "1", myUnitPrice, "1/6");
+                int intTime = 0;
+                while (intTime < Integer.parseInt(myQTY)) {
 
-                intTime += 1;
-            }   // while
+
+                    String strCount = Integer.toString(intStartCount += 1) + "/" + Integer.toString(intCount);
+                    forPrintByEPSON(myCONSECNUMBER, itemName, "1", myUnitPrice, strCount);
+
+                    intTime += 1;
+                }   // while
+
+
 
 
             cursor.moveToNext();
