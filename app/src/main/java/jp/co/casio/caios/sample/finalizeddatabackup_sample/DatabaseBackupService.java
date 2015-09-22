@@ -16,6 +16,12 @@ import android.util.Log;
 import jp.co.casio.caios.framework.device.SerialCom;
 
 public class DatabaseBackupService extends IntentService {
+
+    //My Explicit
+    String myCONSECNUMBER, itemName, myQTY, myUnitPrice;
+
+
+
     private static String TAG = "DatabaseBackupService";
     // Database provider.
     private final static String PROVIDER = "jp.co.casio.caios.framework.database";
@@ -182,6 +188,18 @@ public class DatabaseBackupService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
+
+        String consecNumber = intent.getStringExtra(BroadcastReceiver.EXTRA_CONSECNUMBER);
+        String selection = String.format("CONSECNUMBER='%s'", consecNumber);
+
+//		copySALESWORK("CST004", selection, null, SQLCMD_CREATE_TMP_CST004);
+
+        copySALESWORK("CST005", selection, "LINENUMBER ASC", SQLCMD_CREATE_TMP_CST005);
+
+
+
+
+
         //Connected Printer Pass COM2
         Log.i("Master", "print epson 666");
         Log.i("Master", "com open");
@@ -198,24 +216,6 @@ public class DatabaseBackupService extends IntentService {
 
             byte ESC = 0x1B;
             ByteArrayOutputStream data = new ByteArrayOutputStream();
-            //data.write(ESC);
-            data.write('M');
-            data.write('A');
-            data.write('S');
-            data.write('T');
-            data.write('E');
-            data.write('R');
-            data.write(0x0d);   //ขึ้นบรรทัดใหม่
-            data.write(0x0a);   //CR การให้ Cursor ไปอยู่ด้านซ้าย
-
-
-            //Learn Char
-            char[] charName = {'D', 'O', 'R', 'A', 'M', 'O', 'N'};
-            for (int i = 0; i < charName.length; i++) {
-                data.write(charName[i]);
-            }
-            data.write(0x0d);
-            data.write(0x0a);
 
             //Test String to char
             String strTest = "I love EWTC";
@@ -225,6 +225,16 @@ public class DatabaseBackupService extends IntentService {
             }   //for
             data.write(0x0d);
             data.write(0x0a);
+
+            //Print myCONSECNUMBER
+            char[] charConsecNumber = ("ConsecNumber = " + myCONSECNUMBER).toCharArray();
+            for (int i = 0; i < charTest.length; i++) {
+                data.write(charConsecNumber[i]);
+            }   //for
+            data.write(0x0d);
+            data.write(0x0a);
+
+
 
 
 
@@ -236,24 +246,6 @@ public class DatabaseBackupService extends IntentService {
 
             //ของเดิม
             byte[] out = data.toByteArray();
-
-            //ของใหม่
-//            String example = "Doramon";
-//            byte[] dora = example.getBytes();
-//            byte[] out = dora.toByteArray();
-
-
-            //Test Chart
-//            char[] myChart = {'S', 'u', 'p', 't', 'e', 'r'};
-//            for (int i = 0; i < myChart.length; i++) {
-//                data.write('M');
-//            }
-//            data.write(ESC);
-//            data.write('A');
-
-            // byte[] out = data.toByteArray();
-
-
             com.writeData(out, out.length);
 
 
@@ -269,13 +261,10 @@ public class DatabaseBackupService extends IntentService {
             Log.i("print connect", "fail");
 
 
-        String consecNumber = intent.getStringExtra(BroadcastReceiver.EXTRA_CONSECNUMBER);
-        String selection = String.format("CONSECNUMBER='%s'", consecNumber);
 
-//		copySALESWORK("CST004", selection, null, SQLCMD_CREATE_TMP_CST004);
-
-        copySALESWORK("CST005", selection, "LINENUMBER ASC", SQLCMD_CREATE_TMP_CST005);
     }   // Handler Initen
+
+
 
 
     private boolean copySALESWORK(String tableName, String selection, String sortOrder, String createSQL) {
@@ -304,27 +293,25 @@ public class DatabaseBackupService extends IntentService {
 
             //ค่า CONSECNUMBER
             int offset = cursor.getColumnIndex("CONSECNUMBER");
-            String myCONSECNUMBER = cursor.getString(offset);
+            myCONSECNUMBER = cursor.getString(offset);
 
             //ได้ค่าของ itemName
             offset = cursor.getColumnIndex("ITEMNAME");
-            String itemName = cursor.getString(offset);
+            itemName = cursor.getString(offset);
 
             //ได้ค่าของ QTY
             offset = cursor.getColumnIndex("QTY");
-            String myQTY = cursor.getString(offset);
+            myQTY = cursor.getString(offset);
 
             //ได้ค่าของ UnitPrice
             offset = cursor.getColumnIndex("UNITPRICE");
-            String myUnitPrice = cursor.getString(offset);
+            myUnitPrice = cursor.getString(offset);
 
 
             //Show Log
             Log.d("Master", "myCONSECNUMBER ==> " + myCONSECNUMBER);
             Log.d("Master", "ItemName = " + itemName);
             Log.i("Master", "QTY ==> " + myQTY);
-
-
             Log.i("Master", "UnitPrice ==> " + myUnitPrice);
 
 
@@ -339,13 +326,8 @@ public class DatabaseBackupService extends IntentService {
         return true;
 
 
-    }    // Method
+    }    // Method copySalseWork
 
-
-    protected void printEPSON() {
-
-
-    }    // printEPSPON
 
 
     boolean isPrintKPNo2(String strPrinted) {
