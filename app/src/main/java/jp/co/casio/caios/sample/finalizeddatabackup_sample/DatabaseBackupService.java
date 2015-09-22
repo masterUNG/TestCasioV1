@@ -196,12 +196,13 @@ public class DatabaseBackupService extends IntentService {
         copySALESWORK("CST005", selection, "LINENUMBER ASC", SQLCMD_CREATE_TMP_CST005);
 
 
-        forPrintByEPSON("Test by Master");
+        //forPrintByEPSON("Test by Master");
+
 
 
     }   // Handler Initen
 
-    private void forPrintByEPSON(String strMyType) {
+    private void forPrintByEPSON(String strConsecNumber, String strItemName, String strQTY, String strUnitPrice) {
 
         //Connected Printer Pass COM2
         Log.i("Master", "print epson 666");
@@ -220,23 +221,37 @@ public class DatabaseBackupService extends IntentService {
             byte ESC = 0x1B;
             ByteArrayOutputStream data = new ByteArrayOutputStream();
 
-            //Test String to char
-            String strTest = "I love EWTC";
-            char[] charTest = strTest.toCharArray();
-            for (int i = 0; i < charTest.length; i++) {
-                data.write(charTest[i]);
-            }   //for
-            data.write(0x0d);
-            data.write(0x0a);
-
             //Print myCONSECNUMBER
-            char[] charConsecNumber = strMyType.toCharArray();
-            for (int i = 0; i < charTest.length; i++) {
+            char[] charConsecNumber = ("ConsencNumber = " + strConsecNumber).toCharArray();
+            for (int i = 0; i < charConsecNumber.length; i++) {
                 data.write(charConsecNumber[i]);
             }   //for
             data.write(0x0d);
             data.write(0x0a);
 
+            //Print itemName
+            char[] charItemName = ("Name = " + strItemName).toCharArray();
+            for (int i = 0; i < charItemName.length; i++) {
+                data.write(charItemName[i]);
+            }
+            data.write(0x0d);
+            data.write(0x0a);
+
+            //Print QTY
+            char[] charQTY = ("QTY = " + strQTY).toCharArray();
+            for (int i = 0; i < charQTY.length; i++) {
+                data.write(charQTY[i]);
+            }
+            data.write(0x0d);
+            data.write(0x0a);
+
+            //Print UnitPrice
+            char[] charUnitPrice = ("UnitPrice = " + strUnitPrice).toCharArray();
+            for (int i = 0; i < charUnitPrice.length; i++) {
+                data.write(charUnitPrice[i]);
+            }
+            data.write(0x0d);
+            data.write(0x0a);
 
             data.write(0x1b);   //ESC
             data.write(0x64);   //Feed ling
@@ -284,12 +299,13 @@ public class DatabaseBackupService extends IntentService {
 
         int count = cursor.getCount();
         cursor.moveToFirst();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count-2; i++) {
             Log.d("Master", String.format("Count = %d", count));
 
             //ค่า CONSECNUMBER
             int offset = cursor.getColumnIndex("CONSECNUMBER");
             myCONSECNUMBER = cursor.getString(offset);
+            String masterCons = myCONSECNUMBER;
 
             //ได้ค่าของ itemName
             offset = cursor.getColumnIndex("ITEMNAME");
@@ -307,17 +323,18 @@ public class DatabaseBackupService extends IntentService {
             //Show Log
             Log.d("Master", "myCONSECNUMBER ==> " + myCONSECNUMBER);
             Log.d("Master", "ItemName = " + itemName);
-            Log.i("Master", "QTY ==> " + myQTY);
-            Log.i("Master", "UnitPrice ==> " + myUnitPrice);
+            Log.d("Master", "QTY ==> " + myQTY);
+            Log.d("Master", "UnitPrice ==> " + myUnitPrice);
 
-            //Print from EPSON
-            
+
+           // forPrintByEPSON();
+            forPrintByEPSON(myCONSECNUMBER, itemName, myQTY, myUnitPrice);
 
 
             cursor.moveToNext();
             isPrintKPNo2(myCONSECNUMBER);
 
-        }
+        }   //for
 
         cursor.close();
 
