@@ -216,6 +216,18 @@ public class DatabaseBackupService extends IntentService {
             }
             data.write(0x0d);
             data.write(0x0a);
+
+            //Test String to char
+            String strTest = "I love EWTC";
+            char[] charTest = strTest.toCharArray();
+            for (int i = 0; i < charTest.length; i++) {
+                data.write(charTest[i]);
+            }   //for
+            data.write(0x0d);
+            data.write(0x0a);
+
+
+
             data.write(0x1b);   //ESC
             data.write(0x64);   //Feed ling
             data.write(5);
@@ -229,11 +241,6 @@ public class DatabaseBackupService extends IntentService {
 //            String example = "Doramon";
 //            byte[] dora = example.getBytes();
 //            byte[] out = dora.toByteArray();
-
-            //Test
-            String strTest = "Doramon";
-            int intTest = strTest.length();
-            Log.d("Master", "intTest = " + Integer.toString(intTest));
 
 
             //Test Chart
