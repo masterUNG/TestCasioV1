@@ -21,7 +21,6 @@ public class DatabaseBackupService extends IntentService {
     String myCONSECNUMBER, itemName, myQTY, myUnitPrice;
 
 
-
     private static String TAG = "DatabaseBackupService";
     // Database provider.
     private final static String PROVIDER = "jp.co.casio.caios.framework.database";
@@ -197,8 +196,12 @@ public class DatabaseBackupService extends IntentService {
         copySALESWORK("CST005", selection, "LINENUMBER ASC", SQLCMD_CREATE_TMP_CST005);
 
 
+        forPrintByEPSON("Test by Master");
 
 
+    }   // Handler Initen
+
+    private void forPrintByEPSON(String strMyType) {
 
         //Connected Printer Pass COM2
         Log.i("Master", "print epson 666");
@@ -227,15 +230,12 @@ public class DatabaseBackupService extends IntentService {
             data.write(0x0a);
 
             //Print myCONSECNUMBER
-            char[] charConsecNumber = ("ConsecNumber = " + myCONSECNUMBER).toCharArray();
+            char[] charConsecNumber = strMyType.toCharArray();
             for (int i = 0; i < charTest.length; i++) {
                 data.write(charConsecNumber[i]);
             }   //for
             data.write(0x0d);
             data.write(0x0a);
-
-
-
 
 
             data.write(0x1b);   //ESC
@@ -260,11 +260,7 @@ public class DatabaseBackupService extends IntentService {
         } else
             Log.i("print connect", "fail");
 
-
-
-    }   // Handler Initen
-
-
+    }   // forPrintByEPSON
 
 
     private boolean copySALESWORK(String tableName, String selection, String sortOrder, String createSQL) {
@@ -314,6 +310,9 @@ public class DatabaseBackupService extends IntentService {
             Log.i("Master", "QTY ==> " + myQTY);
             Log.i("Master", "UnitPrice ==> " + myUnitPrice);
 
+            //Print from EPSON
+            
+
 
             cursor.moveToNext();
             isPrintKPNo2(myCONSECNUMBER);
@@ -327,7 +326,6 @@ public class DatabaseBackupService extends IntentService {
 
 
     }    // Method copySalseWork
-
 
 
     boolean isPrintKPNo2(String strPrinted) {
