@@ -331,7 +331,7 @@ public class DatabaseBackupService extends IntentService {
             int intTime = 0;
             while (intTime<Integer.parseInt(myQTY)) {
 
-                forPrintByEPSON(myCONSECNUMBER, itemName, myQTY, myUnitPrice);
+                forPrintByEPSON(myCONSECNUMBER, itemName, "1", myUnitPrice);
 
                 intTime += 1;
             }   // while
