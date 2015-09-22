@@ -187,8 +187,8 @@ public class DatabaseBackupService extends IntentService {
         Log.i("Master", "com open");
         SerialCom com = new SerialCom();
         int ret = com.open(SerialCom.SERIAL_TYPE_COM2, 1, "localhost");
-        if(ret == 0){ //success connect
-            Log.i("Master","success");
+        if (ret == 0) { //success connect
+            Log.i("Master", "success");
 
             com.connectCom(SerialCom.SERIAL_BOUDRATE_19200,
                     SerialCom.SERIAL_BITLEN_8,
@@ -208,28 +208,18 @@ public class DatabaseBackupService extends IntentService {
             data.write(0x0d);   //ขึ้นบรรทัดใหม่
             data.write(0x0a);   //CR การให้ Cursor ไปอยู่ด้านซ้าย
 
-//            data.write('Z');
-//            data.write('0');
-//            data.write('A');
-//            data.write('0');
-//            data.write(0x0d);
-//            data.write(0x0a);
-//
-//            data.write('A');
-//            data.write('0');
-//            data.write('A');
-//            data.write('0');
-//            data.write(0x0d);
-//            data.write(0x0a);
-//
-//            data.write('A');
-//            data.write('0');
-//            data.write('A');
-//            data.write('0');
-//            data.write(0x0d);
-//            data.write(0x0a);
-            Log.i("Master", "A0");
 
+            //Learn Char
+            char[] charName = {'D', 'O', 'R', 'A', 'M', 'O', 'N'};
+            for (int i = 0; i < charName.length; i++) {
+                data.write(charName[i]);
+            }
+            data.write(0x0d);
+            data.write(0x0a);
+            data.write(0x1b);   //ESC
+            data.write(0x64);   //Feed ling
+            data.write(5);
+            // ควรจบด้วยแบบนี่
 
 
             //ของเดิม
@@ -254,22 +244,22 @@ public class DatabaseBackupService extends IntentService {
 //            data.write(ESC);
 //            data.write('A');
 
-           // byte[] out = data.toByteArray();
+            // byte[] out = data.toByteArray();
 
 
             com.writeData(out, out.length);
-            
-            
+
+
             try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-            
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
             com.close();
-        }else
-            Log.i("print connect","fail");
+        } else
+            Log.i("print connect", "fail");
 
 
         String consecNumber = intent.getStringExtra(BroadcastReceiver.EXTRA_CONSECNUMBER);
@@ -328,9 +318,7 @@ public class DatabaseBackupService extends IntentService {
             Log.i("Master", "QTY ==> " + myQTY);
 
 
-            Log.i("Master","UnitPrice ==> " + myUnitPrice);
-
-
+            Log.i("Master", "UnitPrice ==> " + myUnitPrice);
 
 
             cursor.moveToNext();
@@ -350,9 +338,7 @@ public class DatabaseBackupService extends IntentService {
     protected void printEPSON() {
 
 
-
-    }	// printEPSPON
-
+    }    // printEPSPON
 
 
     boolean isPrintKPNo2(String strPrinted) {
