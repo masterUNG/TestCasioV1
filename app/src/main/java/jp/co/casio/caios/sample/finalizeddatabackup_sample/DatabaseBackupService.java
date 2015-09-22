@@ -191,7 +191,7 @@ public class DatabaseBackupService extends IntentService {
         String consecNumber = intent.getStringExtra(BroadcastReceiver.EXTRA_CONSECNUMBER);
         String selection = String.format("CONSECNUMBER='%s'", consecNumber);
 
-//		copySALESWORK("CST004", selection, null, SQLCMD_CREATE_TMP_CST004);
+		copySALESWORKcst004("CST004", selection, null, SQLCMD_CREATE_TMP_CST004);
 
         copySALESWORK("CST005", selection, "LINENUMBER ASC", SQLCMD_CREATE_TMP_CST005);
 
@@ -199,10 +199,72 @@ public class DatabaseBackupService extends IntentService {
         //forPrintByEPSON("Test by Master");
 
 
-
     }   // Handler Initen
 
-    private void forPrintByEPSON(String strConsecNumber, String strItemName, String strQTY, String strUnitPrice) {
+    private boolean copySALESWORKcst004(String tableName, String selection, String sortOrder, String createSQL) {
+
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("content");
+        builder.authority(PROVIDER);
+        builder.appendPath("SALESWORK");
+        builder.appendPath(tableName);
+        Uri uri = builder.build();
+        Cursor cursor = null;
+
+        try {
+            cursor = getContentResolver().query(uri, null, selection, null, sortOrder);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (cursor == null) {
+            return false;
+        }
+
+        int count = cursor.getCount();
+        cursor.moveToFirst();
+        for (int i = 0; i < count; i++) {
+            Log.d("Master", String.format("Count = %d", count));
+
+            //ค่า SALESTTLQTY
+            int offset = cursor.getColumnIndex("SALESTTLQTY");
+            String mySALESTTLQTY = cursor.getString(offset);
+
+
+
+
+
+            //Show Log
+            Log.i("Master", "mySALESTTLQTY ==> " + mySALESTTLQTY);
+
+
+
+            // forPrintByEPSON();
+//            int intTime = 0;
+//            while (intTime < Integer.parseInt(myQTY)) {
+//
+//                forPrintByEPSON(myCONSECNUMBER, itemName, "1", myUnitPrice, "1/6");
+//
+//                intTime += 1;
+ //           }   // while
+
+
+            cursor.moveToNext();
+            isPrintKPNo2(myCONSECNUMBER);
+
+        }   //for
+
+        cursor.close();
+
+
+        return true;
+
+    }   // copySALESWORKcst004
+
+    private void forPrintByEPSON(String strConsecNumber,
+                                 String strItemName,
+                                 String strQTY,
+                                 String strUnitPrice,
+                                 String strCount) {
 
         //Connected Printer Pass COM2
         Log.i("Master", "print epson 666");
@@ -299,7 +361,7 @@ public class DatabaseBackupService extends IntentService {
 
         int count = cursor.getCount();
         cursor.moveToFirst();
-        for (int i = 0; i < count-2; i++) {
+        for (int i = 0; i < count - 2; i++) {
             Log.d("Master", String.format("Count = %d", count));
 
             //ค่า CONSECNUMBER
@@ -327,11 +389,11 @@ public class DatabaseBackupService extends IntentService {
             Log.d("Master", "UnitPrice ==> " + myUnitPrice);
 
 
-           // forPrintByEPSON();
+            // forPrintByEPSON();
             int intTime = 0;
-            while (intTime<Integer.parseInt(myQTY)) {
+            while (intTime < Integer.parseInt(myQTY)) {
 
-                forPrintByEPSON(myCONSECNUMBER, itemName, "1", myUnitPrice);
+                forPrintByEPSON(myCONSECNUMBER, itemName, "1", myUnitPrice, "1/6");
 
                 intTime += 1;
             }   // while
