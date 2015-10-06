@@ -1,17 +1,12 @@
 package jp.co.casio.caios.sample.finalizeddatabackup_sample;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-
 import android.app.IntentService;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
+
+import java.io.ByteArrayOutputStream;
 
 import jp.co.casio.caios.framework.device.SerialCom;
 
@@ -383,6 +378,7 @@ public class DatabaseBackupService extends IntentService {
             Log.d("Master", "QTY ==> " + myQTY);
             Log.d("Master", "UnitPrice ==> " + myUnitPrice);
 
+            
 
             // forPrintByEPSON();
 
